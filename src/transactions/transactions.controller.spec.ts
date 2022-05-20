@@ -3,6 +3,8 @@ import { TransactionsController } from './transactions.controller';
 import { TransactionEntity } from './entities/transaction.entity';
 import { TransactionsService } from './transactions.service';
 import { transactionEntityMock } from './mocks/transactions.entity.mock';
+import { createTransactionDtoMock } from './mocks/transactions.create.dto.mock';
+import { TransformTransaction } from './helpers/transaction.helper';
 
 const transactionsEntityList: TransactionEntity[] = [
   transactionEntityMock,
@@ -21,7 +23,7 @@ describe('TransactionsController', () => {
         {
           provide: TransactionsService,
           useValue: {
-            create: jest.fn(),
+            createPayable: jest.fn().mockResolvedValue(transactionEntityMock),
             findAll: jest.fn().mockResolvedValue(transactionsEntityList),
             findByCustomerId: jest
               .fn()
@@ -42,6 +44,33 @@ describe('TransactionsController', () => {
   it('should be defined', () => {
     expect(transactionsController).toBeDefined();
     expect(transactionsService).toBeDefined();
+  });
+
+  describe('create', () => {
+    it('Should return a transaction entity', async () => {
+      const transaction = TransformTransaction(createTransactionDtoMock);
+
+      expect(transaction.cardNumber).toHaveLength(4);
+      expect(transaction.creationDate).toBe(Date);
+      expect(transaction.cardExpirationDate).toBe(Date);
+
+      const result = await transactionsController.createPayable(transaction);
+
+      expect(transactionsController.createPayable).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(transactionEntityMock);
+    });
+
+    it('Should throw an exception', () => {
+      const transaction = TransformTransaction(createTransactionDtoMock);
+
+      jest
+        .spyOn(transactionsService, 'create')
+        .mockRejectedValueOnce(new Error());
+
+      expect(
+        transactionsController.createPayable(transaction),
+      ).rejects.toThrowError();
+    });
   });
 
   describe('findAll', () => {

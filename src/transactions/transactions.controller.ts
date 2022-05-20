@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseInterceptors,
@@ -12,7 +11,6 @@ import {
 import { TransactionsService } from './transactions.service';
 import { TransactionEntity } from './entities/transaction.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransformTransaction } from './helpers/transaction.helper';
 import { ApplyBusinessRules } from 'src/payable/helpers/payable.helper';
 import { CreatePayableDto } from 'src/payable/dto/create-payable.dto';
