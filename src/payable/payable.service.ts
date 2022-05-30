@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CheckBalanceDto } from './dto/check-balance.dto';
 import { CreatePayableDto } from './dto/create-payable.dto';
 import { UpdatePayableDto } from './dto/update-payable.dto';
 import { PayableEntity } from './entities/payable.entity';
@@ -31,15 +32,17 @@ export class PayableService {
     return this.PayableRepository.find({ where: { customerId } });
   }
 
-  async getPayableByStatus(status: string) {
-    return this.PayableRepository.find({ where: { status } });
+  async getPayableByStatus(checkBalance: CheckBalanceDto) {
+    const { status, customerId } = checkBalance;
+    return this.PayableRepository.find({ where: { status, customerId } });
   }
 
-  update(payableId: number, updatePayableDto: UpdatePayableDto) {
+  async update(payableId: number, updatePayableDto: UpdatePayableDto) {
     return this.PayableRepository.update({ payableId }, updatePayableDto);
   }
 
-  remove(payableId: number) {
-    return this.PayableRepository.delete({ payableId });
+  async remove(payableId: number) {
+    await this.PayableRepository.delete({ payableId });
+    return payableId;
   }
 }

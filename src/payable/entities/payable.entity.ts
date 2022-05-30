@@ -16,4 +16,12 @@ export class PayableEntity {
 
   @Column()
   paymentDate: Date;
+
+  constructor(payable?: Partial<PayableEntity>) {
+    this.customerId = payable?.customerId;
+    this.payableId = payable?.payableId;
+    this.paymentDate = payable?.paymentDate;
+    this.status = payable?.status;
+    this.value = payable?.value;
+  }
 }

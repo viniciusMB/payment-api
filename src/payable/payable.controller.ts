@@ -2,10 +2,13 @@ import {
   Controller,
   Get,
   Param,
+  Body,
   Delete,
   UseInterceptors,
   CacheInterceptor,
 } from '@nestjs/common';
+import { CheckBalanceDto } from './dto/check-balance.dto';
+import { PayableEntity } from './entities/payable.entity';
 import { PayableService } from './payable.service';
 
 @UseInterceptors(CacheInterceptor)
@@ -14,25 +17,27 @@ export class PayableController {
   constructor(private readonly payableService: PayableService) {}
 
   @Get()
-  findAll() {
+  async findAll(): Promise<PayableEntity[]> {
     return this.payableService.findAll();
   }
 
   @Get(':payableId')
-  findOne(@Param('payableId') payableId: string) {
+  async findOne(@Param('payableId') payableId: string): Promise<PayableEntity> {
     return this.payableService.findOne(+payableId);
   }
 
   @Get('customerId/:customerId')
-  findByCustomerId(@Param('customerId') customerId: string) {
+  async findByCustomerId(
+    @Param('customerId') customerId: string,
+  ): Promise<PayableEntity[]> {
     return this.payableService.findByCustomerId(customerId);
   }
 
   @Get('balance/:status')
-  async getBalanceByStatus(@Param('status') payableStatus: string) {
-    const payables = await this.payableService.getPayableByStatus(
-      payableStatus,
-    );
+  async getBalanceByStatus(
+    @Body() checkBalance: CheckBalanceDto,
+  ): Promise<number> {
+    const payables = await this.payableService.getPayableByStatus(checkBalance);
 
     let totalValue = 0;
     for (const payable of payables) {
@@ -43,7 +48,7 @@ export class PayableController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string): Promise<number> {
     return this.payableService.remove(+id);
   }
 }

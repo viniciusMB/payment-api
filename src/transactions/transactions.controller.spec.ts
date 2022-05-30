@@ -46,7 +46,7 @@ describe('TransactionsController', () => {
     expect(transactionsService).toBeDefined();
   });
 
-  describe('create', () => {
+  describe('createPayable', () => {
     it('Should return a transaction entity', async () => {
       const transaction = TransformTransaction(createTransactionDtoMock);
 
@@ -77,7 +77,7 @@ describe('TransactionsController', () => {
     it('Should return all transactions', async () => {
       const result = await transactionsController.findAll();
 
-      expect(transactionsController.findOne).toHaveBeenCalledTimes(1);
+      expect(transactionsController.findAll).toHaveBeenCalledTimes(1);
       expect(result).toEqual(transactionsEntityList);
     });
 
@@ -94,9 +94,13 @@ describe('TransactionsController', () => {
     it('Should return a transaction with same Id', async () => {
       const transactionId = '1';
       const result = await transactionsController.findOne(transactionId);
+
+      expect(result).toEqual(transactionEntityMock);
       expect(result.transactionId).toEqual(transactionId);
       expect(transactionsController.findOne).toHaveBeenCalledTimes(1);
-      expect(transactionsController).toHaveBeenCalledWith(transactionId);
+      expect(transactionsController.findOne).toHaveBeenCalledWith(
+        transactionId,
+      );
     });
 
     it('Should throw an exception', () => {
@@ -116,6 +120,9 @@ describe('TransactionsController', () => {
     it(`Should return all customer's transactions`, async () => {
       const customerId = '1';
       const result = await transactionsController.findByCustomerId(customerId);
+
+      expect(result).toEqual(transactionsEntityList);
+
       expect(
         result.filter((transaction) => transaction.customerId !== customerId),
       ).toHaveLength(0);
