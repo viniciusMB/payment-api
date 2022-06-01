@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CheckBalanceDto } from './dto/check-balance.dto';
 import { CreatePayableDto } from './dto/create-payable.dto';
-import { UpdatePayableDto } from './dto/update-payable.dto';
 import { PayableEntity } from './entities/payable.entity';
 
 @Injectable()
@@ -14,7 +13,7 @@ export class PayableService {
   ) {}
 
   async create(createPayableDto: CreatePayableDto) {
-    const payable = this.PayableRepository.create(createPayableDto);
+    const payable = await this.PayableRepository.create(createPayableDto);
     this.PayableRepository.save(payable);
 
     return payable;
@@ -35,10 +34,6 @@ export class PayableService {
   async getPayableByStatus(checkBalance: CheckBalanceDto) {
     const { status, customerId } = checkBalance;
     return this.PayableRepository.find({ where: { status, customerId } });
-  }
-
-  async update(payableId: number, updatePayableDto: UpdatePayableDto) {
-    return this.PayableRepository.update({ payableId }, updatePayableDto);
   }
 
   async remove(payableId: number) {

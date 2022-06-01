@@ -135,7 +135,7 @@ describe('PayableController', () => {
       const payableId = '1';
       const result = await payableController.remove(payableId);
 
-      expect(result).toEqual(payableId);
+      expect(result).toEqual(Number(payableId));
       expect(payableController.remove).toHaveBeenCalledTimes(1);
       expect(payableController.remove).toHaveBeenCalledWith(payableId);
     });

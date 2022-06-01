@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionEntity } from './entities/transaction.entity';
 import { TransactionsService } from './transactions.service';
 import { transactionEntityMock } from './mocks/transactions.entity.mock';
+import { createTransactionDtoMock } from './mocks/transactions.create.dto.mock';
 
 const transactionsEntityList: TransactionEntity[] = [
   transactionEntityMock,
@@ -32,12 +33,29 @@ describe('TransactionsService', () => {
     }).compile();
 
     transactionsService = module.get<TransactionsService>(TransactionsService);
-    transactionsService = module.get<TransactionsService>(TransactionsService);
   });
 
   it('should be defined', () => {
     expect(transactionsService).toBeDefined();
-    expect(transactionsService).toBeDefined();
+  });
+  // a
+  describe('create', () => {
+    it('Should create a trasanction and return it', async () => {
+      const result = await transactionsService.create(createTransactionDtoMock);
+
+      expect(transactionsService.create).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(transactionEntityMock);
+    });
+
+    it('Should throw an exception', () => {
+      jest
+        .spyOn(transactionsService, 'create')
+        .mockRejectedValueOnce(new Error());
+    });
+
+    expect(
+      transactionsService.create(createTransactionDtoMock),
+    ).rejects.toThrowError();
   });
 
   describe('findAll', () => {
