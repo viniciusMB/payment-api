@@ -4,6 +4,7 @@ import { PayableController } from './payable.controller';
 import { PayableService } from './payable.service';
 import { payableEntityMock } from './mocks/payable.entity.mock';
 import { CheckBalanceDto } from './dto/check-balance.dto';
+import { CACHE_MANAGER } from '@nestjs/common';
 
 const payableEntityList: PayableEntity[] = [
   payableEntityMock,
@@ -20,12 +21,16 @@ describe('PayableController', () => {
       controllers: [PayableController],
       providers: [
         {
+          provide: CACHE_MANAGER,
+          useFactory: jest.fn(),
+        },
+        {
           provide: PayableService,
           useValue: {
             findAll: jest.fn().mockResolvedValue(payableEntityList),
             findOne: jest.fn().mockResolvedValue(payableEntityMock),
             findByCustomerId: jest.fn().mockResolvedValue(payableEntityList),
-            getBalanceByStatus: jest.fn().mockResolvedValue(3),
+            getPayableByStatus: jest.fn().mockResolvedValue(payableEntityList),
             remove: jest.fn().mockResolvedValue(1),
           },
         },
@@ -44,7 +49,7 @@ describe('PayableController', () => {
   describe('findAll', () => {
     it('Should return all payables', async () => {
       const result = await payableController.findAll();
-      expect(payableController.findAll).toHaveBeenCalledTimes(1);
+      expect(payableService.findAll).toHaveBeenCalledTimes(1);
       expect(result).toEqual(payableEntityList);
     });
 
@@ -60,9 +65,9 @@ describe('PayableController', () => {
       const result = await payableController.findOne(payableId);
 
       expect(result).toEqual(payableEntityMock);
-      expect(result.payableId).toEqual(payableId);
-      expect(payableController.findOne).toHaveBeenCalledTimes(1);
-      expect(payableController.findOne).toHaveBeenCalledWith(payableId);
+      expect(result.payableId).toEqual(+payableId);
+      expect(payableService.findOne).toHaveBeenCalledTimes(1);
+      expect(payableService.findOne).toHaveBeenCalledWith(+payableId);
     });
 
     it('Should throw an exception', () => {
@@ -84,8 +89,8 @@ describe('PayableController', () => {
         result.filter((payable) => payable.customerId !== customerId),
       ).toHaveLength(0);
 
-      expect(payableController.findByCustomerId).toHaveBeenCalledTimes(1);
-      expect(payableController.findByCustomerId).toBeCalledWith(customerId);
+      expect(payableService.findByCustomerId).toHaveBeenCalledTimes(1);
+      expect(payableService.findByCustomerId).toBeCalledWith(customerId);
     });
 
     it('Should throw an exception', () => {
@@ -113,7 +118,7 @@ describe('PayableController', () => {
         return prev + next.value;
       }, 0);
 
-      expect(payableController.getBalanceByStatus).toHaveBeenCalledTimes(1);
+      expect(payableService.getPayableByStatus).toHaveBeenCalledTimes(1);
       expect(result).toEqual(sum);
     });
 
@@ -136,8 +141,8 @@ describe('PayableController', () => {
       const result = await payableController.remove(payableId);
 
       expect(result).toEqual(Number(payableId));
-      expect(payableController.remove).toHaveBeenCalledTimes(1);
-      expect(payableController.remove).toHaveBeenCalledWith(payableId);
+      expect(payableService.remove).toHaveBeenCalledTimes(1);
+      expect(payableService.remove).toHaveBeenCalledWith(+payableId);
     });
 
     it('Should throw an exception', () => {

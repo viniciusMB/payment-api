@@ -1,8 +1,9 @@
 import { CreatePayableDto } from '../dto/create-payable.dto';
 import { parseJSON, add } from 'date-fns';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TransactionEntity } from 'src/transactions/entities/transaction.entity';
 
+@Injectable()
 export class ApplyBusinessRules {
   async feeAndPaymentDate(transactionData: TransactionEntity) {
     const { paymentMethod, creationDate, value, customerId } = transactionData;

@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { TransactionEntity } from './entities/transaction.entity';
 
 @Injectable()
@@ -16,7 +15,9 @@ export class TransactionsService {
     const transactionData =
       this.TransactionRepository.create(createTransactionDto);
 
-    return this.TransactionRepository.save(transactionData);
+    await this.TransactionRepository.save(transactionData);
+
+    return transactionData;
   }
 
   async findAll() {

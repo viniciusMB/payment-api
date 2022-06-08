@@ -5,6 +5,13 @@ import { TransactionsService } from './transactions.service';
 import { transactionEntityMock } from './mocks/transactions.entity.mock';
 import { createTransactionDtoMock } from './mocks/transactions.create.dto.mock';
 import { TransformTransaction } from './helpers/transaction.helper';
+import { CACHE_MANAGER } from '@nestjs/common';
+import { PayableService } from '../payable/payable.service';
+import { Repository } from 'typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { PayableEntity } from '../payable/entities/payable.entity';
+import { ApplyBusinessRules } from '../payable/helpers/payable.helper';
+import { payableEntityMock } from '../payable/mocks/payable.entity.mock';
 
 const transactionsEntityList: TransactionEntity[] = [
   transactionEntityMock,
@@ -19,11 +26,25 @@ describe('TransactionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TransactionsController],
+      imports: [Repository],
       providers: [
+        PayableService,
+        ApplyBusinessRules,
+        {
+          provide: getRepositoryToken(PayableEntity),
+          useValue: {
+            create: jest.fn().mockResolvedValue(payableEntityMock),
+            save: jest.fn(),
+          },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useFactory: jest.fn(),
+        },
         {
           provide: TransactionsService,
           useValue: {
-            createPayable: jest.fn().mockResolvedValue(transactionEntityMock),
+            create: jest.fn().mockResolvedValue(transactionEntityMock),
             findAll: jest.fn().mockResolvedValue(transactionsEntityList),
             findByCustomerId: jest
               .fn()
@@ -47,17 +68,13 @@ describe('TransactionsController', () => {
   });
 
   describe('createPayable', () => {
-    it('Should return a transaction entity', async () => {
-      const transaction = TransformTransaction(createTransactionDtoMock);
+    it('Should return a payable entity', async () => {
+      const result = await transactionsController.createPayable(
+        createTransactionDtoMock,
+      );
 
-      expect(transaction.cardNumber).toHaveLength(4);
-      expect(transaction.creationDate).toBe(Date);
-      expect(transaction.cardExpirationDate).toBe(Date);
-
-      const result = await transactionsController.createPayable(transaction);
-
-      expect(transactionsController.createPayable).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(transactionEntityMock);
+      expect(transactionsService.create).toHaveBeenCalledTimes(1);
+      expect(result).toEqual(payableEntityMock);
     });
 
     it('Should throw an exception', () => {
@@ -77,7 +94,7 @@ describe('TransactionsController', () => {
     it('Should return all transactions', async () => {
       const result = await transactionsController.findAll();
 
-      expect(transactionsController.findAll).toHaveBeenCalledTimes(1);
+      expect(transactionsService.findAll).toHaveBeenCalledTimes(1);
       expect(result).toEqual(transactionsEntityList);
     });
 
@@ -96,11 +113,9 @@ describe('TransactionsController', () => {
       const result = await transactionsController.findOne(transactionId);
 
       expect(result).toEqual(transactionEntityMock);
-      expect(result.transactionId).toEqual(transactionId);
-      expect(transactionsController.findOne).toHaveBeenCalledTimes(1);
-      expect(transactionsController.findOne).toHaveBeenCalledWith(
-        transactionId,
-      );
+      expect(result.transactionId).toEqual(+transactionId);
+      expect(transactionsService.findOne).toHaveBeenCalledTimes(1);
+      expect(transactionsService.findOne).toHaveBeenCalledWith(+transactionId);
     });
 
     it('Should throw an exception', () => {
@@ -127,8 +142,8 @@ describe('TransactionsController', () => {
         result.filter((transaction) => transaction.customerId !== customerId),
       ).toHaveLength(0);
 
-      expect(transactionsController.findByCustomerId).toHaveBeenCalledTimes(1);
-      expect(transactionsController.findByCustomerId).toHaveBeenCalledWith(
+      expect(transactionsService.findByCustomerId).toHaveBeenCalledTimes(1);
+      expect(transactionsService.findByCustomerId).toHaveBeenCalledWith(
         customerId,
       );
     });
@@ -151,8 +166,8 @@ describe('TransactionsController', () => {
       const transactionId = '1';
       const result = await transactionsController.remove(transactionId);
       expect(result).toEqual(transactionId);
-      expect(transactionsController.remove).toHaveBeenCalledTimes(1);
-      expect(transactionsController.remove).toHaveBeenCalledWith(transactionId);
+      expect(transactionsService.remove).toHaveBeenCalledTimes(1);
+      expect(transactionsService.remove).toHaveBeenCalledWith(+transactionId);
     });
 
     it('Should throw an exception', () => {

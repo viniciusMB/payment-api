@@ -12,9 +12,9 @@ import { TransactionsService } from './transactions.service';
 import { TransactionEntity } from './entities/transaction.entity';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransformTransaction } from './helpers/transaction.helper';
-import { ApplyBusinessRules } from 'src/payable/helpers/payable.helper';
-import { CreatePayableDto } from 'src/payable/dto/create-payable.dto';
-import { PayableService } from 'src/payable/payable.service';
+import { ApplyBusinessRules } from '../payable/helpers/payable.helper';
+import { CreatePayableDto } from '../payable/dto/create-payable.dto';
+import { PayableService } from '../payable/payable.service';
 
 @UseInterceptors(CacheInterceptor)
 @Controller('transactions')
