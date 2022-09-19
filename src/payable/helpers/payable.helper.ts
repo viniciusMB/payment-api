@@ -1,7 +1,7 @@
 import { CreatePayableDto } from '../dto/create-payable.dto';
 import { parseJSON, add } from 'date-fns';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { TransactionEntity } from 'src/transactions/entities/transaction.entity';
+import { TransactionEntity } from '../../transactions/entities/transaction.entity';
 
 @Injectable()
 export class ApplyBusinessRules {

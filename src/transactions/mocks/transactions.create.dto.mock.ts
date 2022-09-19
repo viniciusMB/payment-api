@@ -7,7 +7,7 @@ export const createTransactionDtoMock: CreateTransactionDto = {
   paymentMethod: 'credit_card',
   cardNumber: '1234',
   cardOwnerName: 'Vinicius',
-  cardExpirationDate: add(parseJSON(Date.now()), { years: 5 }),
-  creationDate: parseJSON(Date.now()),
+  cardExpirationDate: add(parseJSON(1663355754805), { years: 5 }),
+  creationDate: parseJSON(1663355754805),
   cardVerificationCode: '027',
 };

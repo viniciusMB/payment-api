@@ -29,7 +29,7 @@ export class TransactionsService {
   }
 
   async findOne(transactionId: number) {
-    return this.TransactionRepository.findOne(transactionId);
+    return this.TransactionRepository.findOne({ where: { transactionId } });
   }
 
   async remove(transactionId: number) {

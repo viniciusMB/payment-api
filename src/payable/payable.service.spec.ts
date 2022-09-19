@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PayableEntity } from './entities/payable.entity';
 import { PayableService } from './payable.service';
 import { payableEntityMock } from './mocks/payable.entity.mock';
+import { createPayableDtoMock } from './mocks/payable.create.dto.mock';
 import { CreatePayableDto } from './dto/create-payable.dto';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -57,31 +58,19 @@ describe('PayableService', () => {
 
   describe('create', () => {
     it('Should create a payable and return it', async () => {
-      const createPayableDto: CreatePayableDto = {
-        value: 1,
-        status: 'paid',
-        customerId: '1',
-        paymentDate: payableEntityMock.paymentDate,
-      };
-
-      const result = await payableService.create(createPayableDto);
+      const result = await payableService.create(createPayableDtoMock);
 
       expect(payableRepository.create).toHaveBeenCalledTimes(1);
       expect(payableRepository.save).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(payableEntityMock);
+      expect(result).toEqual(expect.objectContaining(createPayableDtoMock));
     });
 
     it('Should throw an exception', () => {
-      const createPayableDto: CreatePayableDto = {
-        value: 1,
-        status: 'paid',
-        customerId: '1',
-        paymentDate: payableEntityMock.paymentDate,
-      };
-
       jest.spyOn(payableRepository, 'save').mockRejectedValueOnce(new Error());
 
-      expect(payableService.create(createPayableDto)).rejects.toThrowError();
+      expect(
+        payableService.create(createPayableDtoMock),
+      ).rejects.toThrowError();
     });
   });
 
@@ -101,13 +90,15 @@ describe('PayableService', () => {
 
   describe('findOne', () => {
     it('Should return a payble with same Id', async () => {
-      const payableId = '1';
-      const result = await payableService.findOne(+payableId);
+      const payableId = 1;
+      const result = await payableService.findOne(payableId);
 
       expect(result).toEqual(payableEntityMock);
-      expect(result.payableId).toEqual(+payableId);
+      expect(result.payableId).toEqual(payableId);
       expect(payableRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(payableRepository.findOne).toHaveBeenCalledWith(payableId);
+      expect(payableRepository.findOne).toHaveBeenCalledWith({
+        where: { payableId },
+      });
     });
 
     it('Should throw an exception', () => {

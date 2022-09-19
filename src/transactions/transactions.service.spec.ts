@@ -62,7 +62,7 @@ describe('TransactionsService', () => {
 
       expect(transactionsRepository.create).toHaveBeenCalledTimes(1);
       expect(transactionsRepository.save).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(transactionEntityMock);
+      expect(result).toEqual(expect.objectContaining(createTransactionDtoMock));
     });
 
     it('Should throw an exception', () => {
@@ -99,9 +99,9 @@ describe('TransactionsService', () => {
       const result = await transactionsService.findOne(transactionId);
       expect(result.transactionId).toEqual(transactionId);
       expect(transactionsRepository.findOne).toHaveBeenCalledTimes(1);
-      expect(transactionsRepository.findOne).toHaveBeenCalledWith(
-        transactionId,
-      );
+      expect(transactionsRepository.findOne).toHaveBeenCalledWith({
+        where: { transactionId },
+      });
     });
 
     it('Should throw an exception', () => {

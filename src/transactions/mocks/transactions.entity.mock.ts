@@ -8,7 +8,7 @@ export const transactionEntityMock = new TransactionEntity({
   cardNumber: '1234',
   cardOwnerName: 'Vinicius',
   customerId: '1',
-  cardExpirationDate: add(parseJSON(Date.now()), { years: 5 }),
-  creationDate: parseJSON(Date.now()),
+  cardExpirationDate: add(parseJSON(1663355754805), { years: 5 }),
+  creationDate: parseJSON(1663355754805),
   cardVerificationCode: '027',
 });

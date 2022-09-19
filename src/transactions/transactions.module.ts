@@ -3,8 +3,8 @@ import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionEntity } from './entities/transaction.entity';
-import { PayableModule } from 'src/payable/payable.module';
-import { ApplyBusinessRules } from 'src/payable/helpers/payable.helper';
+import { PayableModule } from '../payable/payable.module';
+import { ApplyBusinessRules } from '../payable/helpers/payable.helper';
 
 @Module({
   imports: [TypeOrmModule.forFeature([TransactionEntity]), PayableModule],

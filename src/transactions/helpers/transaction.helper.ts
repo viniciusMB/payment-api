@@ -1,5 +1,6 @@
 import { CreateTransactionDto } from '../dto/create-transaction.dto';
 import { parseJSON } from 'date-fns';
+import { HttpException, HttpStatus } from '@nestjs/common';
 export function TransformTransaction(transaction: CreateTransactionDto) {
   try {
     const transactionFormated: CreateTransactionDto = transaction;
@@ -12,6 +13,9 @@ export function TransformTransaction(transaction: CreateTransactionDto) {
     transactionFormated.creationDate = parseJSON(creationDate);
     return transactionFormated;
   } catch (error) {
-    return error.message;
+    throw new HttpException(
+      'Error parsing transaction',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }

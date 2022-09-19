@@ -13,8 +13,8 @@ export class PayableService {
   ) {}
 
   async create(createPayableDto: CreatePayableDto) {
-    const payable = await this.PayableRepository.create(createPayableDto);
-    this.PayableRepository.save(payable);
+    const payable = this.PayableRepository.create(createPayableDto);
+    await this.PayableRepository.save(payable);
 
     return payable;
   }
@@ -24,7 +24,7 @@ export class PayableService {
   }
 
   async findOne(payableId: number) {
-    return this.PayableRepository.findOne(payableId);
+    return this.PayableRepository.findOne({ where: { payableId } });
   }
 
   async findByCustomerId(customerId: string) {
